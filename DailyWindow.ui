@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>오늘의 단어</string>
   </property>
   <widget class="QLabel" name="label">
    <property name="geometry">
@@ -39,7 +39,7 @@ border-style: solid;
 border-width: 5px;</string>
    </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string/>
    </property>
    <property name="scaledContents">
     <bool>false</bool>
@@ -52,6 +52,9 @@ border-width: 5px;</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>160</x>
@@ -89,6 +92,76 @@ border-width: 5px;</string>
    <property name="clearButtonEnabled">
     <bool>true</bool>
    </property>
+  </widget>
+  <widget class="QWidget" name="gridLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>320</y>
+     <width>1061</width>
+     <height>221</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="l1" rowstretch="0,0,0,0">
+    <property name="horizontalSpacing">
+     <number>7</number>
+    </property>
+    <property name="verticalSpacing">
+     <number>10</number>
+    </property>
+    <item row="1" column="0">
+     <widget class="QPushButton" name="btn3">
+      <property name="font">
+       <font>
+        <family>맑은 고딕</family>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QPushButton" name="btn2">
+      <property name="font">
+       <font>
+        <family>맑은 고딕</family>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QPushButton" name="btn1">
+      <property name="font">
+       <font>
+        <family>맑은 고딕</family>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QPushButton" name="btn4">
+      <property name="font">
+       <font>
+        <family>맑은 고딕</family>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>
