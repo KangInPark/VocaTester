@@ -52,11 +52,13 @@ class DailyWindow(QDialog, daily_ui):
         self.daily = Daily(rnd, plist, fdir)
         self.total = len(self.daily.word)
         self.score = 0
+        self.n = 0
+        self.data = None
+        self.wans = []
         self.btn1.clicked.connect(self.submit)
         self.btn2.clicked.connect(self.submit)
         self.btn3.clicked.connect(self.submit)
         self.btn4.clicked.connect(self.submit)
-        self.lineEdit.returnPressed.connect(self.submit)
         self.btn1.hide()
         self.btn2.hide()
         self.btn3.hide()
@@ -66,24 +68,47 @@ class DailyWindow(QDialog, daily_ui):
         self.loadQ()
     
     def submit(self):
-        if self.lineEdit.text() == "":
-            return
+        if self.n == 1:
+            ans = self.lineEdit.text()
+            if ans == "":
+                return
+            if ans == self.data[0][0]:
+                self.score += 1
+            else:            
+                self.wans.append(self.data[0])
+            self.lineEdit.hide()
+            self.lineEdit.setText("")
+        elif self.n == 2:
+            if self.sender().text() == self.data[0][2]:
+                self.score += 1
+            else:
+                self.wans.append(self.data[0])
+            self.btn1.hide()
+            self.btn2.hide()
+            self.btn3.hide()
+            self.btn4.hide()
+        self.loadQ()
     
     def loadQ(self):
-        n, tmp = self.daily.nextQ()
-        if n == 1:
+        self.n, self.data = self.daily.nextQ()
+        if self.n == 0 and self.data == None:
+            print(f"학습종료.\n점수{self.score}/{self.total}\n오답내용:{self.wans}")
+            self.close()
+        if self.n == 1:
             cls = ""
-            if tmp[0][1] != None:
-                cls = f'[{tmp[0][1]}]'
-            self.label.setText(f'{cls}\n{tmp[0][2]}')
+            if self.data[0][1] != None:
+                cls = f'[{self.data[0][1]}]'
+            self.label.setText(f'{cls}\n{self.data[0][2]}')
+            self.ans = self.data[0][0]
+            self.lineEdit.raise_()
             self.lineEdit.show()
-        elif n == 2:
-            self.label.setText(tmp[0][0])
+        elif self.n == 2:
+            self.label.setText(self.data[0][0])
             ans = []
-            ans.append(tmp[0][2])
-            ans.append(tmp[1])
-            ans.append(tmp[2])
-            ans.append(tmp[3])
+            ans.append(self.data[0][2])
+            ans.append(self.data[1])
+            ans.append(self.data[2])
+            ans.append(self.data[3])
             shuffle(ans)
             self.btn1.setText(ans[0])
             self.btn2.setText(ans[1])
@@ -94,6 +119,11 @@ class DailyWindow(QDialog, daily_ui):
             self.btn3.show()
             self.btn4.show()
     
+    def keyReleaseEvent(self, e):
+        if e.key() == QtCore.Qt.Key.Key_Enter or e.key() == QtCore.Qt.Key.Key_Return:
+            if self.lineEdit.text() != "":
+                self.submit()
+                
 class TotalWindow(QDialog, total_ui):
     def __init__(self):
         super().__init__()
