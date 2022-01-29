@@ -19,7 +19,6 @@ class Daily():
             self.mlist.append(row[2].value)
         if len(self.word) <= 4 and 2 in self.plist:
             self.plist.remove(2)
-        print(self.word)
     
     def nextQ(self):
         if not self.word:
