@@ -1,6 +1,5 @@
 from PyQt5.QtWidgets import *
-from PyQt5 import uic
-from PyQt5 import QtCore
+from PyQt5 import uic, QtCore, QtWidgets
 import sys
 
 main_ui = uic.loadUiType("MainWindow.ui")[0]
@@ -27,6 +26,12 @@ class DailyOption(QDialog, dailyop_ui):
         self.setupUi(self)
         self.show()
         self.btn.clicked.connect(self.Btn)
+        self.fbtn.clicked.connect(self.Fopen)
+    
+    def Fopen(self):
+        self.fdir = QtWidgets.QFileDialog.getOpenFileName(self,'OpenFile')
+        self.label.setText('파일 선택 완료')
+        self.btn.setEnabled(True)
     
     def Btn(self):
         plist = []
@@ -35,14 +40,15 @@ class DailyOption(QDialog, dailyop_ui):
         if self.chk3.isChecked():
             plist.append(2)
         self.close()
-        self.dailyWindow = DailyWindow(self.chk1.isChecked(), plist)
+        self.dailyWindow = DailyWindow(self.chk1.isChecked(), plist, self.fdir[0])
 
 class DailyWindow(QDialog, daily_ui):
-    def __init__(self, rnd, plist):
+    def __init__(self, rnd, plist, fdir):
         super().__init__()
         self.setupUi(self)
         self.rnd = rnd
         self.plist = plist
+        self.fdir = fdir
         self.show()
     
 class TotalWindow(QDialog, total_ui):
