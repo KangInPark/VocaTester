@@ -1,3 +1,5 @@
+import datetime
+import os
 from random import choice, randint
 import sys
 from openpyxl import Workbook, load_workbook
@@ -7,7 +9,7 @@ class Daily():
         self.rnd = rnd
         self.plist = plist
         self.fdir = fdir
-        self.wb = load_workbook(fdir, data_only=True)
+        self.wb = load_workbook(fdir)
         self.ws = self.wb.active
         self.setWord()
     
@@ -39,3 +41,21 @@ class Daily():
                 if sam != ret[0][2] and sam not in ret:
                     ret.append(sam)
         return n, ret
+    
+    def review(self, wans):
+        path = os.getcwd() + '\\data\\review.xlsx'
+        if not os.path.isfile(path):
+            wb = Workbook()
+            ws = wb['Sheet']
+            ws.title = str(datetime.date.today())
+        else:
+            wb = load_workbook(path)
+            ws = wb.create_sheet(str(datetime.date.today()))
+        for i in range(1, len(wans)+1):
+            ws.cell(i,1).value = wans[i-1][0]
+            if wans[i-1][1] == None:
+                ws.cell(i,2).value = ""
+            else:
+                ws.cell(i,2).value = wans[i-1][1]
+            ws.cell(i,3).value = wans[i-1][2]
+        wb.save(path)

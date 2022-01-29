@@ -1,3 +1,4 @@
+import os
 from random import shuffle
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtCore, QtWidgets
@@ -87,6 +88,8 @@ class TestWindow(QDialog, test_ui):
         self.n, self.data = self.agent.nextQ()
         if self.n == 0 and self.data == None:
             print(f"학습종료.\n점수{self.score}/{self.total}\n오답내용:{self.wans}")
+            if self.score != self.total:
+                self.agent.review(self.wans)
             self.close()
         if self.n == 1:
             cls = ""
@@ -128,6 +131,9 @@ class TestWindow(QDialog, test_ui):
                 self.submit()
     
 if __name__ == '__main__':
+    path = os.getcwd() + '\\data'
+    if not os.path.isdir(path):
+        os.mkdir(path)
     app = QApplication(sys.argv)
     mainWindow = MainWindow()
     mainWindow.show()
