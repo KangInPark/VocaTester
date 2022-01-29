@@ -59,10 +59,7 @@ class DailyWindow(QDialog, daily_ui):
         self.btn2.clicked.connect(self.submit)
         self.btn3.clicked.connect(self.submit)
         self.btn4.clicked.connect(self.submit)
-        self.btn1.hide()
-        self.btn2.hide()
-        self.btn3.hide()
-        self.btn4.hide()
+        self.btnHide()
         self.lineEdit.hide()
         self.show()
         self.loadQ()
@@ -83,10 +80,7 @@ class DailyWindow(QDialog, daily_ui):
                 self.score += 1
             else:
                 self.wans.append(self.data[0])
-            self.btn1.hide()
-            self.btn2.hide()
-            self.btn3.hide()
-            self.btn4.hide()
+            self.btnHide()
         self.loadQ()
     
     def loadQ(self):
@@ -114,10 +108,19 @@ class DailyWindow(QDialog, daily_ui):
             self.btn2.setText(ans[1])
             self.btn3.setText(ans[2])
             self.btn4.setText(ans[3])
-            self.btn1.show()
-            self.btn2.show()
-            self.btn3.show()
-            self.btn4.show()
+            self.btnShow()
+
+    def btnShow(self):
+        self.btn1.show()
+        self.btn2.show()
+        self.btn3.show()
+        self.btn4.show()
+        
+    def btnHide(self):
+        self.btn1.hide()
+        self.btn2.hide()
+        self.btn3.hide()
+        self.btn4.hide() 
     
     def keyReleaseEvent(self, e):
         if e.key() == QtCore.Qt.Key.Key_Enter or e.key() == QtCore.Qt.Key.Key_Return:
