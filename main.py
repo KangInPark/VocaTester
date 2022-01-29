@@ -6,8 +6,7 @@ import sys
 from Daily import Daily
 
 main_ui = uic.loadUiType("MainWindow.ui")[0]
-daily_ui = uic.loadUiType("DailyWindow.ui")[0]
-total_ui = uic.loadUiType("TotalWindow.ui")[0]
+test_ui = uic.loadUiType("TestWindow.ui")[0]
 dailyop_ui = uic.loadUiType("DailyOption.ui")[0]
 
 class MainWindow(QMainWindow, main_ui):
@@ -21,7 +20,7 @@ class MainWindow(QMainWindow, main_ui):
         self.dailyOption = DailyOption()
         
     def TotalBtn(self):
-        self.totalWindow = TotalWindow()
+        pass
 
 class DailyOption(QDialog, dailyop_ui):
     def __init__(self):
@@ -43,14 +42,15 @@ class DailyOption(QDialog, dailyop_ui):
         if self.chk3.isChecked():
             plist.append(2)
         self.close()
-        self.dailyWindow = DailyWindow(self.chk1.isChecked(), plist, self.fdir[0])
+        self.dailyWindow = TestWindow(0, self.chk1.isChecked(), plist, self.fdir[0])
 
-class DailyWindow(QDialog, daily_ui):
-    def __init__(self, rnd, plist, fdir):
+class TestWindow(QDialog, test_ui):
+    def __init__(self, mode, rnd, plist, fdir):
         super().__init__()
         self.setupUi(self)
-        self.daily = Daily(rnd, plist, fdir)
-        self.total = len(self.daily.word)
+        if mode == 0:
+            self.agent = Daily(rnd, plist, fdir)
+        self.total = len(self.agent.word)
         self.score = 0
         self.n = 0
         self.data = None
@@ -84,7 +84,7 @@ class DailyWindow(QDialog, daily_ui):
         self.loadQ()
     
     def loadQ(self):
-        self.n, self.data = self.daily.nextQ()
+        self.n, self.data = self.agent.nextQ()
         if self.n == 0 and self.data == None:
             print(f"학습종료.\n점수{self.score}/{self.total}\n오답내용:{self.wans}")
             self.close()
@@ -126,12 +126,6 @@ class DailyWindow(QDialog, daily_ui):
         if e.key() == QtCore.Qt.Key.Key_Enter or e.key() == QtCore.Qt.Key.Key_Return:
             if self.lineEdit.text() != "":
                 self.submit()
-                
-class TotalWindow(QDialog, total_ui):
-    def __init__(self):
-        super().__init__()
-        self.setupUi(self)
-        self.show()
     
 if __name__ == '__main__':
     app = QApplication(sys.argv)
