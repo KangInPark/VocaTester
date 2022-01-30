@@ -7,12 +7,17 @@ import sys
 from openpyxl import Workbook, load_workbook
 
 class Daily():
-    def __init__(self, rnd, plist, fdir):
+    def __init__(self, rnd, plist, fdir, cnt):
         self.rnd = rnd
         self.plist = plist
         self.fdir = fdir
-        self.wb = load_workbook(fdir)
-        self.ws = self.wb.active
+        self.cnt = cnt
+        if self.cnt == 1:
+            self.wb = load_workbook(fdir)
+            self.ws = self.wb.active
+        else:
+            self.wb = load_workbook(fdir)
+            self.ws = self.wb[self.wb.sheetnames[-1]]
         self.setWord()
         self.warn = 0
         if 2 in plist or 3 in plist:
@@ -21,11 +26,21 @@ class Daily():
             if len(self.mlist) < 6:
                 self.word = []
                 self.warn = 1
+                
     def setWord(self):
         self.word = []
+        chk = 1
+        if self.cnt >= 2:
+            chk = 0
         for row in self.ws.iter_rows():
+            if row[0].value == str(self.cnt-1) + "차시":
+                chk = 1
+                continue
+            if chk == 0:
+                continue
             self.word.append((row[0].value, row[1].value, row[2].value))
         self.accumulate(self.word)
+        self.wb.close()
     
     def nextQ(self):
         if not self.word:
@@ -49,24 +64,42 @@ class Daily():
                     ret.append(sam)
         return n, ret
     
-    def review(self, wans, cnt):
+    def review(self, wans):
         path = os.getcwd() + '\\data\\review.xlsx'
         if not os.path.isfile(path):
             wb = Workbook()
             ws = wb['Sheet']
-            ws.title = f'{str(datetime.date.today())}-({cnt})'
+            ws.title = f'{str(datetime.date.today())}_1'
         else:
             wb = load_workbook(path)
-            ws = wb.create_sheet(f'{str(datetime.date.today())}-({cnt})')
-        for i in range(1, len(wans)+1):
-            ws.cell(i,1).value = wans[i-1][0][0]
-            if wans[i-1][0][1] == None:
+            chk = wb.sheetnames[-1].split('_')
+            if  chk[0] != str(datetime.date.today()):    
+                sname = f'{str(datetime.date.today())}_1'
+                ws = wb.create_sheet(sname)
+            elif self.cnt == 1:
+                sname = f'{chk[0]}_{str(int(chk[1])+1)}'
+                ws = wb.create_sheet(sname)
+            else:
+                ws = wb[self.wb.sheetnames[-1]]
+        row = 1
+        if self.cnt == 1:
+            ws.cell(row,1).value = "1차시"
+            row += 1
+        else:
+            while ws.cell(row,1).value != None:
+                row += 1
+            ws.cell(row,1).value = str(self.cnt)+"차시"
+            row += 1            
+        for i in range(row, len(wans) + row):
+            ws.cell(i,1).value = wans[i-row][0][0]
+            if wans[i-row][0][1] == None:
                 ws.cell(i,2).value = ""
             else:
-                ws.cell(i,2).value = wans[i-1][0][1]
-            ws.cell(i,3).value = wans[i-1][0][2]
-            ws.cell(i,4).value = wans[i-1][1]
+                ws.cell(i,2).value = wans[i-row][0][1]
+            ws.cell(i,3).value = wans[i-row][0][2]
+            ws.cell(i,4).value = wans[i-row][1]
         wb.save(path)
+        wb.close()
         
     def accumulate(self, words):
         word = deepcopy(words)
@@ -105,3 +138,4 @@ class Daily():
         pick.extend(word)
         with open(os.getcwd() + f'\\data\\{today}.pkl', 'wb') as f:
             pickle.dump(pick, f)
+        wb.close()

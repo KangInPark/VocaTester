@@ -18,19 +18,30 @@ class MainWindow(QMainWindow, main_ui):
         self.btn2.clicked.connect(self.TotalBtn)
     
     def DailyBtn(self):
-        self.dailyOption = DailyOption()
-        self.dailyOption.exec_()
+        cnt = 1
+        while True:
+            self.dailyOption = DailyOption(cnt)
+            self.dailyOption.exec_()
+            if self.dailyOption.dailyWindow.end == 1:
+                break
+            cnt += 1
         
     def TotalBtn(self):
         pass
 
 class DailyOption(QDialog, dailyop_ui):
-    def __init__(self):
+    def __init__(self, cnt):
         super().__init__()
         self.setupUi(self)
+        self.cnt = cnt
         self.show()
+        self.fbtn.hide()
         self.btn.clicked.connect(self.Btn)
-        self.fbtn.clicked.connect(self.Fopen)
+        if cnt == 1:
+            self.fbtn.clicked.connect(self.Fopen)
+            self.fbtn.show()
+        else:
+            self.btn.setEnabled(True)
     
     def Fopen(self):
         self.fdir = QtWidgets.QFileDialog.getOpenFileName(self,'OpenFile')
@@ -44,22 +55,27 @@ class DailyOption(QDialog, dailyop_ui):
         if self.chk3.isChecked():
             plist.append(2)
         self.close()
-        self.dailyWindow = TestWindow(0, self.chk1.isChecked(), plist, self.fdir[0])
+        if self.cnt == 1:
+            path = self.fdir[0]
+        else:
+            path = os.getcwd() + f'\\data\\review.xlsx'
+        self.dailyWindow = TestWindow(0, self.chk1.isChecked(), plist, path, self.cnt)
         self.dailyWindow.exec_()
 
 class TestWindow(QDialog, test_ui):
-    def __init__(self, mode, rnd, plist, fdir):
+    def __init__(self, mode, rnd, plist, fdir, cnt):
         super().__init__()
         self.setupUi(self)
+        self.cnt = cnt
         if mode == 0:
-            self.agent = Daily(rnd, plist, fdir)
+            self.agent = Daily(rnd, plist, fdir, self.cnt)
         self.total = len(self.agent.word)
         self.score = 0
         self.n = 0
         self.data = None
         self.wans = []
-        self.cnt = 1
         self.curr = 0
+        self.end = 0
         self.btn1.clicked.connect(self.submit)
         self.btn2.clicked.connect(self.submit)
         self.btn3.clicked.connect(self.submit)
@@ -93,11 +109,13 @@ class TestWindow(QDialog, test_ui):
         if self.n == 0 and self.data == None:
             print(f"학습종료.\n점수{self.score}/{self.total}\n오답내용:{self.wans}")
             if self.score != self.total:
-                self.agent.review(self.wans, self.cnt)
-                self.cnt += 1
+                self.agent.review(self.wans)
+            else:
+                self.end = 1
             self.close()
         elif self.n == -1:
             QtWidgets.QMessageBox.critical(self, "경고", "선택한 유형의 테스트를 진행하기에 저장된 단어 데이터의 수가 부족합니다.\n고르기 유형의 경우 최소 6개 이상의 단어 데이터가 필요합니다.\n테스트를 종료합니다.")
+            self.end = 1
             self.close()
         self.curr += 1
         self.setWindowTitle(f'오늘의 단어 ({self.curr}/{self.total})')
