@@ -19,6 +19,7 @@ class MainWindow(QMainWindow, main_ui):
     
     def DailyBtn(self):
         self.dailyOption = DailyOption()
+        self.dailyOption.exec_()
         
     def TotalBtn(self):
         pass
@@ -44,6 +45,7 @@ class DailyOption(QDialog, dailyop_ui):
             plist.append(2)
         self.close()
         self.dailyWindow = TestWindow(0, self.chk1.isChecked(), plist, self.fdir[0])
+        self.dailyWindow.exec_()
 
 class TestWindow(QDialog, test_ui):
     def __init__(self, mode, rnd, plist, fdir):
@@ -57,6 +59,7 @@ class TestWindow(QDialog, test_ui):
         self.data = None
         self.wans = []
         self.cnt = 1
+        self.curr = 0
         self.btn1.clicked.connect(self.submit)
         self.btn2.clicked.connect(self.submit)
         self.btn3.clicked.connect(self.submit)
@@ -93,6 +96,8 @@ class TestWindow(QDialog, test_ui):
                 self.agent.review(self.wans, self.cnt)
                 self.cnt += 1
             self.close()
+        self.curr += 1
+        self.setWindowTitle(f'오늘의 단어 ({self.curr}/{self.total})')
         if self.n == 1:
             cls = ""
             if self.data[0][1] != None:
