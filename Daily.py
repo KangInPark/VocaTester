@@ -7,11 +7,12 @@ import sys
 from openpyxl import Workbook, load_workbook
 
 class Daily():
-    def __init__(self, rnd, plist, fdir, cnt):
+    def __init__(self, rnd, plist, fdir, cnt, same):
         self.rnd = rnd
         self.plist = plist
         self.fdir = fdir
         self.cnt = cnt
+        self.same = same
         if self.cnt == 1:
             self.wb = load_workbook(fdir)
             self.ws = self.wb.active
@@ -59,9 +60,17 @@ class Daily():
         elif n == 2:
             ret.append(tmp)
             while len(ret) < 6:
-                sam = choice(self.mlist)[2]
+                pick = choice(self.mlist)
+                sam = pick[2]
                 if sam != ret[0][2] and sam not in ret:
-                    ret.append(sam)
+                    if self.same:     
+                        if ret[0][1] == None:
+                            ret.append(sam)
+                        else:
+                            if ret[0][1] == pick[1]:
+                                ret.append(sam)
+                    else:
+                        ret.append(sam)
         return n, ret
     
     def review(self, wans):

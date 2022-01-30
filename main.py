@@ -63,16 +63,16 @@ class DailyOption(QDialog, dailyop_ui):
             path = self.fdir[0]
         else:
             path = os.getcwd() + f'\\data\\review.xlsx'
-        self.dailyWindow = TestWindow(0, self.chk1.isChecked(), plist, path, self.cnt)
+        self.dailyWindow = TestWindow(0, self.chk1.isChecked(), plist, path, self.cnt, self.chk4.isChecked())
         self.dailyWindow.exec_()
 
 class TestWindow(QDialog, test_ui):
-    def __init__(self, mode, rnd, plist, fdir, cnt):
+    def __init__(self, mode, rnd, plist, fdir, cnt, same):
         super().__init__()
         self.setupUi(self)
         self.cnt = cnt
         if mode == 0:
-            self.agent = Daily(rnd, plist, fdir, self.cnt)
+            self.agent = Daily(rnd, plist, fdir, self.cnt, same)
         self.total = len(self.agent.word)
         self.score = 0
         self.n = 0
