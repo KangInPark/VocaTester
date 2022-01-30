@@ -84,6 +84,10 @@ class TestWindow(QDialog, test_ui):
         self.btn2.clicked.connect(self.submit)
         self.btn3.clicked.connect(self.submit)
         self.btn4.clicked.connect(self.submit)
+        self.btn5.clicked.connect(self.submit)
+        self.btn6.clicked.connect(self.submit)
+        self.btn7.clicked.connect(self.submit)
+        self.btn7.setText("정답을 모르겠음.")
         self.btnHide()
         self.lineEdit.hide()
         self.show()
@@ -140,11 +144,15 @@ class TestWindow(QDialog, test_ui):
             ans.append(self.data[1])
             ans.append(self.data[2])
             ans.append(self.data[3])
+            ans.append(self.data[4])
+            ans.append(self.data[5])
             shuffle(ans)
             self.btn1.setText(ans[0])
             self.btn2.setText(ans[1])
             self.btn3.setText(ans[2])
             self.btn4.setText(ans[3])
+            self.btn5.setText(ans[4])
+            self.btn6.setText(ans[5])
             self.btnShow()
 
     def btnShow(self):
@@ -152,12 +160,18 @@ class TestWindow(QDialog, test_ui):
         self.btn2.show()
         self.btn3.show()
         self.btn4.show()
+        self.btn5.show()
+        self.btn6.show()
+        self.btn7.show()
         
     def btnHide(self):
         self.btn1.hide()
         self.btn2.hide()
         self.btn3.hide()
         self.btn4.hide() 
+        self.btn5.hide() 
+        self.btn6.hide() 
+        self.btn7.hide() 
     
     def keyReleaseEvent(self, e):
         if e.key() == QtCore.Qt.Key.Key_Enter or e.key() == QtCore.Qt.Key.Key_Return:

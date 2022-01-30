@@ -58,7 +58,7 @@ class Daily():
             ret.append(tmp)
         elif n == 2:
             ret.append(tmp)
-            while len(ret) < 4:
+            while len(ret) < 6:
                 sam = choice(self.mlist)[2]
                 if sam != ret[0][2] and sam not in ret:
                     ret.append(sam)

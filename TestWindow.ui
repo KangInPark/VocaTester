@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1106</width>
-    <height>552</height>
+    <height>599</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>20</x>
      <y>20</y>
      <width>1061</width>
-     <height>291</height>
+     <height>221</height>
     </rect>
    </property>
    <property name="font">
@@ -97,20 +97,20 @@ border-width: 5px;</string>
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>320</y>
+     <y>250</y>
      <width>1061</width>
-     <height>221</height>
+     <height>342</height>
     </rect>
    </property>
-   <layout class="QGridLayout" name="l1" rowstretch="0,0,0,0">
+   <layout class="QGridLayout" name="l1" rowstretch="0,0,0,0,0,0,0">
     <property name="horizontalSpacing">
      <number>7</number>
     </property>
     <property name="verticalSpacing">
      <number>10</number>
     </property>
-    <item row="1" column="0">
-     <widget class="QPushButton" name="btn3">
+    <item row="5" column="0">
+     <widget class="QPushButton" name="btn6">
       <property name="font">
        <font>
         <family>맑은 고딕</family>
@@ -123,6 +123,32 @@ border-width: 5px;</string>
      </widget>
     </item>
     <item row="3" column="0">
+     <widget class="QPushButton" name="btn4">
+      <property name="font">
+       <font>
+        <family>맑은 고딕</family>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QPushButton" name="btn3">
+      <property name="font">
+       <font>
+        <family>맑은 고딕</family>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
      <widget class="QPushButton" name="btn2">
       <property name="font">
        <font>
@@ -148,8 +174,21 @@ border-width: 5px;</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="0">
-     <widget class="QPushButton" name="btn4">
+    <item row="4" column="0">
+     <widget class="QPushButton" name="btn5">
+      <property name="font">
+       <font>
+        <family>맑은 고딕</family>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0">
+     <widget class="QPushButton" name="btn7">
       <property name="font">
        <font>
         <family>맑은 고딕</family>
