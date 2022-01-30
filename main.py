@@ -5,10 +5,12 @@ from PyQt5 import uic, QtCore, QtWidgets
 import sys
 
 from Daily import Daily
+from Memorize import Memorize
 
 main_ui = uic.loadUiType("MainWindow.ui")[0]
 test_ui = uic.loadUiType("TestWindow.ui")[0]
 dailyop_ui = uic.loadUiType("DailyOption.ui")[0]
+memo_ui = uic.loadUiType("MemorizeWindow.ui")[0]
 
 class MainWindow(QMainWindow, main_ui):
     def __init__(self):
@@ -24,6 +26,8 @@ class MainWindow(QMainWindow, main_ui):
             self.dailyOption.exec_()
             if self.dailyOption.dailyWindow.end == 1:
                 break
+            self.memorizeWindow = MemorizeWindow(cnt)
+            self.memorizeWindow.exec_()
             cnt += 1
         
     def TotalBtn(self):
@@ -113,10 +117,12 @@ class TestWindow(QDialog, test_ui):
             else:
                 self.end = 1
             self.close()
+            return
         elif self.n == -1:
             QtWidgets.QMessageBox.critical(self, "경고", "선택한 유형의 테스트를 진행하기에 저장된 단어 데이터의 수가 부족합니다.\n고르기 유형의 경우 최소 6개 이상의 단어 데이터가 필요합니다.\n테스트를 종료합니다.")
             self.end = 1
             self.close()
+            return
         self.curr += 1
         self.setWindowTitle(f'오늘의 단어 ({self.curr}/{self.total})')
         if self.n == 1:
@@ -157,6 +163,35 @@ class TestWindow(QDialog, test_ui):
         if e.key() == QtCore.Qt.Key.Key_Enter or e.key() == QtCore.Qt.Key.Key_Return:
             if self.lineEdit.text() != "":
                 self.submit()
+
+class MemorizeWindow(QDialog, memo_ui):
+    def __init__(self, cnt):
+        super().__init__()
+        self.setupUi(self)
+        self.cnt = cnt
+        self.agent = Memorize(self.cnt)
+        self.btn.clicked.connect(self.btnclick)
+        self.total = len(self.agent.memolist)
+        self.curr = 0
+        self.show()
+        self.load()
+        
+    def load(self):
+        self.data = self.agent.nextMemo()
+        if self.data == None:
+            self.close()
+            return
+        s = self.data[0] + '\n\n'
+        if self.data[1] != None:
+            s += f'[{self.data[1]}] '
+        s += self.data[2]
+        self.label1.setText(s)
+        self.label2.setText(self.data[3])
+        self.curr += 1
+        self.setWindowTitle(f'오답 점검 ({self.curr}/{self.total})')
+
+    def btnclick(self):
+        self.load()
     
 if __name__ == '__main__':
     path = os.getcwd() + '\\data'
