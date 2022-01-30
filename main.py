@@ -97,7 +97,8 @@ class TestWindow(QDialog, test_ui):
                 self.cnt += 1
             self.close()
         elif self.n == -1:
-            QtWidgets.QMessageBox.critical(self, "경고", "선택한 유형의 테스트를 진행하기에 저장된 단어 데이터의 수가 부족합니다. 선택형 유형의 경우 최소 6개 이상의 단어 데이터가 필요합니다.\n테스트를 종료합니다.")
+            QtWidgets.QMessageBox.critical(self, "경고", "선택한 유형의 테스트를 진행하기에 저장된 단어 데이터의 수가 부족합니다.\n고르기 유형의 경우 최소 6개 이상의 단어 데이터가 필요합니다.\n테스트를 종료합니다.")
+            self.close()
         self.curr += 1
         self.setWindowTitle(f'오늘의 단어 ({self.curr}/{self.total})')
         if self.n == 1:
