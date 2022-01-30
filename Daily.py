@@ -1,3 +1,4 @@
+from copy import deepcopy
 import datetime
 import os
 from random import choice, randint
@@ -21,6 +22,7 @@ class Daily():
             self.mlist.append(row[2].value)
         if len(self.word) <= 4 and 2 in self.plist:
             self.plist.remove(2)
+        self.accumulate(self.word)
     
     def nextQ(self):
         if not self.word:
@@ -58,4 +60,34 @@ class Daily():
             else:
                 ws.cell(i,2).value = wans[i-1][1]
             ws.cell(i,3).value = wans[i-1][2]
+        wb.save(path)
+        
+    def accumulate(self, words):
+        word = deepcopy(words)
+        path = os.getcwd() + '\\data\\CumulativeWords.xlsx'
+        dup = {}
+        today = str(datetime.date.today())
+        if not os.path.isfile(path):
+            wb = Workbook()
+            ws = wb['Sheet']
+            ws.title = today
+        else:
+            wb = load_workbook(path)
+            if today in wb.sheetnames:
+                ws = wb[today]
+                for item in word:
+                    if item[0] not in dup:
+                        dup[item[0]] = 1
+                for row in ws.iter_rows():
+                    if row[0].value not in dup:
+                        word.append((row[0].value, row[1].value, row[2].value))
+                del wb[today]
+            ws = wb.create_sheet(today)
+        for i in range(1, len(word)+1):
+            ws.cell(i,1).value = word[i-1][0]
+            if word[i-1][1] == None:
+                ws.cell(i,2).value = ""
+            else:
+                ws.cell(i,2).value = word[i-1][1]
+            ws.cell(i,3).value = word[i-1][2]
         wb.save(path)
