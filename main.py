@@ -77,14 +77,14 @@ class TestWindow(QDialog, test_ui):
             if ans == self.data[0][0]:
                 self.score += 1
             else:            
-                self.wans.append(self.data[0])
+                self.wans.append((self.data[0], ans))
             self.lineEdit.hide()
             self.lineEdit.setText("")
         elif self.n == 2:
             if self.sender().text() == self.data[0][2]:
                 self.score += 1
             else:
-                self.wans.append(self.data[0])
+                self.wans.append((self.data[0], self.sender().text()))
             self.btnHide()
         self.loadQ()
     

@@ -54,12 +54,13 @@ class Daily():
             wb = load_workbook(path)
             ws = wb.create_sheet(f'{str(datetime.date.today())}-({cnt})')
         for i in range(1, len(wans)+1):
-            ws.cell(i,1).value = wans[i-1][0]
-            if wans[i-1][1] == None:
+            ws.cell(i,1).value = wans[i-1][0][0]
+            if wans[i-1][0][1] == None:
                 ws.cell(i,2).value = ""
             else:
-                ws.cell(i,2).value = wans[i-1][1]
-            ws.cell(i,3).value = wans[i-1][2]
+                ws.cell(i,2).value = wans[i-1][0][1]
+            ws.cell(i,3).value = wans[i-1][0][2]
+            ws.cell(i,4).value = wans[i-1][1]
         wb.save(path)
         
     def accumulate(self, words):
