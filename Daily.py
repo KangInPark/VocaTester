@@ -42,15 +42,15 @@ class Daily():
                     ret.append(sam)
         return n, ret
     
-    def review(self, wans):
+    def review(self, wans, cnt):
         path = os.getcwd() + '\\data\\review.xlsx'
         if not os.path.isfile(path):
             wb = Workbook()
             ws = wb['Sheet']
-            ws.title = str(datetime.date.today())
+            ws.title = f'{str(datetime.date.today())}-({cnt})'
         else:
             wb = load_workbook(path)
-            ws = wb.create_sheet(str(datetime.date.today()))
+            ws = wb.create_sheet(f'{str(datetime.date.today())}-({cnt})')
         for i in range(1, len(wans)+1):
             ws.cell(i,1).value = wans[i-1][0]
             if wans[i-1][1] == None:

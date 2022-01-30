@@ -56,6 +56,7 @@ class TestWindow(QDialog, test_ui):
         self.n = 0
         self.data = None
         self.wans = []
+        self.cnt = 1
         self.btn1.clicked.connect(self.submit)
         self.btn2.clicked.connect(self.submit)
         self.btn3.clicked.connect(self.submit)
@@ -89,7 +90,8 @@ class TestWindow(QDialog, test_ui):
         if self.n == 0 and self.data == None:
             print(f"학습종료.\n점수{self.score}/{self.total}\n오답내용:{self.wans}")
             if self.score != self.total:
-                self.agent.review(self.wans)
+                self.agent.review(self.wans, self.cnt)
+                self.cnt += 1
             self.close()
         if self.n == 1:
             cls = ""
