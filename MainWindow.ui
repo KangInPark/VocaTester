@@ -23,7 +23,8 @@
     </rect>
    </property>
    <property name="text">
-    <string>오늘의 단어</string>
+    <string>오늘의 단어
+테스트</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btn2">
