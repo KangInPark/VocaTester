@@ -1,7 +1,7 @@
 import os
 from random import shuffle
 from PyQt5.QtWidgets import *
-from PyQt5 import uic, QtCore, QtWidgets
+from PyQt5 import uic, QtCore, QtWidgets, QtGui
 import sys
 
 from Daily import Daily
@@ -41,6 +41,10 @@ class DailyOption(QDialog, dailyop_ui):
         self.show()
         self.fbtn.hide()
         self.btn.clicked.connect(self.Btn)
+        validator = QtGui.QIntValidator(1, 9999, self)
+        self.line1.setValidator(validator)
+        self.line2.setValidator(validator)
+        self.line3.setValidator(validator)
         if cnt == 1:
             self.fbtn.clicked.connect(self.Fopen)
             self.fbtn.show()
@@ -58,16 +62,22 @@ class DailyOption(QDialog, dailyop_ui):
             plist.append(1)
         if self.chk3.isChecked():
             plist.append(2)
+        # if self.chk5.isChecked():
+        #     plist.append(3)
         self.close()
         if self.cnt == 1:
             path = self.fdir[0]
         else:
             path = os.getcwd() + f'\\data\\review.xlsx'
-        self.dailyWindow = TestWindow(0, self.chk1.isChecked(), plist, path, self.cnt, self.chk4.isChecked())
+        tlimit = [0, int(self.line1.text()), int(self.line2.text()), int(self.line3.text())]
+        rnd = self.chk1.isChecked()
+        mode = 0
+        same = self.chk4.isChecked()
+        self.dailyWindow = TestWindow(mode, rnd, plist, path, self.cnt, same, tlimit)
         self.dailyWindow.exec_()
 
 class TestWindow(QDialog, test_ui):
-    def __init__(self, mode, rnd, plist, fdir, cnt, same):
+    def __init__(self, mode, rnd, plist, fdir, cnt, same, tlimit):
         super().__init__()
         self.setupUi(self)
         self.cnt = cnt
@@ -80,6 +90,12 @@ class TestWindow(QDialog, test_ui):
         self.wans = []
         self.curr = 0
         self.end = 0
+        self.tlimit = tlimit
+        self.timer = QtCore.QTimer()
+        self.timer.setInterval(500)
+        self.elapsed = 0
+        self.tover = 0
+        self.timer.timeout.connect(self.Timer)
         self.btn1.clicked.connect(self.submit)
         self.btn2.clicked.connect(self.submit)
         self.btn3.clicked.connect(self.submit)
@@ -87,14 +103,24 @@ class TestWindow(QDialog, test_ui):
         self.btn5.clicked.connect(self.submit)
         self.btn6.clicked.connect(self.submit)
         self.btn7.clicked.connect(self.submit)
-        self.btn7.setText("정답을 모르겠음.")
+        self.btn7.setText("---- 정답을 모르겠음 ----")
         self.btnHide()
         self.lineEdit.hide()
         self.show()
         self.loadQ()
     
     def submit(self):
-        if self.n == 1:
+        self.timer.stop()
+        if self.tover == 1:
+            self.wans.append((self.data[0], "---- 시간 초과 ----"))
+            self.tover = 0
+            QtWidgets.QMessageBox.warning(self, "시간 초과", "문제풀이 시간이 초과되었습니다.")
+            if self.n == 1:
+                self.lineEdit.hide()
+                self.lineEdit.setText("")
+            elif self.n == 2:
+                self.btnHide()          
+        elif self.n == 1:
             ans = self.lineEdit.text()
             if ans == "":
                 return
@@ -129,6 +155,7 @@ class TestWindow(QDialog, test_ui):
             return
         self.curr += 1
         self.setWindowTitle(f'오늘의 단어 ({self.curr}/{self.total})')
+        
         if self.n == 1:
             cls = ""
             if self.data[0][1] != None:
@@ -154,6 +181,10 @@ class TestWindow(QDialog, test_ui):
             self.btn5.setText(ans[4])
             self.btn6.setText(ans[5])
             self.btnShow()
+        self.pb.setValue(0)
+        self.pb.setMaximum(self.tlimit[self.n]*1000)
+        self.elapsed = 0
+        self.timer.start()
 
     def btnShow(self):
         self.btn1.show()
@@ -177,6 +208,15 @@ class TestWindow(QDialog, test_ui):
         if e.key() == QtCore.Qt.Key.Key_Enter or e.key() == QtCore.Qt.Key.Key_Return:
             if self.lineEdit.text() != "":
                 self.submit()
+    
+    def Timer(self):
+        self.elapsed += 500
+        self.pb.setValue(self.elapsed) 
+        limit = self.tlimit[self.n] * 1000
+        if limit == self.elapsed:
+            self.tover = 1
+            self.submit()
+                       
 
 class MemorizeWindow(QDialog, memo_ui):
     def __init__(self, cnt):
