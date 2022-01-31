@@ -141,11 +141,14 @@ class TestWindow(QDialog, test_ui):
     def loadQ(self):
         self.n, self.data = self.agent.nextQ()
         if self.n == 0 and self.data == None:
-            print(f"학습종료.\n점수{self.score}/{self.total}\n오답내용:{self.wans}")
+            ment = f'모든 문제를 풀었습니다.\n총 {self.total}문제 중 {self.score}문제를 맞추셨습니다.'
             if self.score != self.total:
                 self.agent.review(self.wans)
+                ment += f'\n{len(self.wans)}문제의 오답을 점검합니다.'
             else:
                 self.end = 1
+                ment += '\n오답이 없으므로 학습을 종료합니다.'
+            QtWidgets.QMessageBox.information(self, '문제풀이 종료', ment)
             self.close()
             return
         elif self.n == -1:
@@ -233,6 +236,7 @@ class MemorizeWindow(QDialog, memo_ui):
     def load(self):
         self.data = self.agent.nextMemo()
         if self.data == None:
+            QtWidgets.QMessageBox.information(self,'오답 점검 완료', '모든 오답을 점검하였습니다. 오답 문제들로 테스트를 재진행합니다.')
             self.close()
             return
         s = self.data[0] + '\n\n'
