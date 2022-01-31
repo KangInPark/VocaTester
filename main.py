@@ -62,8 +62,8 @@ class DailyOption(QDialog, dailyop_ui):
             plist.append(1)
         if self.chk3.isChecked():
             plist.append(2)
-        # if self.chk5.isChecked():
-        #     plist.append(3)
+        if self.chk5.isChecked():
+            plist.append(3)
         self.close()
         if self.cnt == 1:
             path = self.fdir[0]
@@ -119,6 +119,8 @@ class TestWindow(QDialog, test_ui):
                 self.lineEdit.hide()
                 self.lineEdit.setText("")
             elif self.n == 2:
+                self.btnHide()
+            elif self.n == 3:
                 self.btnHide()          
         elif self.n == 1:
             ans = self.lineEdit.text()
@@ -132,6 +134,12 @@ class TestWindow(QDialog, test_ui):
             self.lineEdit.setText("")
         elif self.n == 2:
             if self.sender().text() == self.data[0][2]:
+                self.score += 1
+            else:
+                self.wans.append((self.data[0], self.sender().text()))
+            self.btnHide()
+        elif self.n == 3:
+            if self.sender().text() == self.data[0][0]:
                 self.score += 1
             else:
                 self.wans.append((self.data[0], self.sender().text()))
@@ -171,6 +179,27 @@ class TestWindow(QDialog, test_ui):
             self.label.setText(self.data[0][0])
             ans = []
             ans.append(self.data[0][2])
+            ans.append(self.data[1])
+            ans.append(self.data[2])
+            ans.append(self.data[3])
+            ans.append(self.data[4])
+            ans.append(self.data[5])
+            shuffle(ans)
+            self.btn1.setText(ans[0])
+            self.btn2.setText(ans[1])
+            self.btn3.setText(ans[2])
+            self.btn4.setText(ans[3])
+            self.btn5.setText(ans[4])
+            self.btn6.setText(ans[5])
+            self.btnShow()
+        elif self.n == 3:
+            txt = ""
+            if self.data[0][1] != None:
+                txt += f'[{self.data[0][1]}]\n'
+            txt += self.data[0][2]
+            self.label.setText(txt)
+            ans = []
+            ans.append(self.data[0][0])
             ans.append(self.data[1])
             ans.append(self.data[2])
             ans.append(self.data[3])

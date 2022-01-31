@@ -71,6 +71,20 @@ class Daily():
                                 ret.append(sam)
                     else:
                         ret.append(sam)
+        elif n == 3:
+            ret.append(tmp)
+            while len(ret) < 6:
+                pick = choice(self.mlist)
+                sam = pick[0]
+                if sam != ret[0][0] and sam not in ret:
+                    if self.same:
+                        if ret[0][1] == None:
+                            ret.append(sam)
+                        else:
+                            if ret[0][1] == pick[1]:
+                                ret.append(sam)
+                    else:
+                        ret.append(sam)
         return n, ret
     
     def review(self, wans):
