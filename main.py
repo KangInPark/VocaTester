@@ -10,6 +10,7 @@ from Memorize import Memorize
 main_ui = uic.loadUiType("MainWindow.ui")[0]
 test_ui = uic.loadUiType("TestWindow.ui")[0]
 dailyop_ui = uic.loadUiType("DailyOption.ui")[0]
+totalop_ui = uic.loadUiType("TotalOption.ui")[0]
 memo_ui = uic.loadUiType("MemorizeWindow.ui")[0]
 
 class MainWindow(QMainWindow, main_ui):
@@ -41,10 +42,6 @@ class DailyOption(QDialog, dailyop_ui):
         self.show()
         self.fbtn.hide()
         self.btn.clicked.connect(self.Btn)
-        validator = QtGui.QIntValidator(1, 9999, self)
-        self.line1.setValidator(validator)
-        self.line2.setValidator(validator)
-        self.line3.setValidator(validator)
         if cnt == 1:
             self.fbtn.clicked.connect(self.Fopen)
             self.fbtn.show()
@@ -69,7 +66,7 @@ class DailyOption(QDialog, dailyop_ui):
             path = self.fdir[0]
         else:
             path = os.getcwd() + f'\\data\\review.xlsx'
-        tlimit = [0, int(self.line1.text()), int(self.line2.text()), int(self.line3.text())]
+        tlimit = [0, self.line1.value(), self.line2.value(), self.line3.value()]
         rnd = self.chk1.isChecked()
         mode = 0
         same = self.chk4.isChecked()
@@ -216,6 +213,7 @@ class TestWindow(QDialog, test_ui):
         self.pb.setValue(0)
         self.pb.setMaximum(self.tlimit[self.n]*1000)
         self.elapsed = 0
+        self.tlabel.setText(f'{self.tlimit[self.n]}초')
         self.timer.start()
 
     def btnShow(self):
@@ -245,11 +243,12 @@ class TestWindow(QDialog, test_ui):
         self.elapsed += 500
         self.pb.setValue(self.elapsed) 
         limit = self.tlimit[self.n] * 1000
+        if self.elapsed % 1000 == 0:
+            self.tlabel.setText(f'{int((limit - self.elapsed)/1000)}초')
         if limit == self.elapsed:
             self.tover = 1
             self.submit()
                        
-
 class MemorizeWindow(QDialog, memo_ui):
     def __init__(self, cnt):
         super().__init__()
