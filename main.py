@@ -4,8 +4,11 @@ from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtCore, QtWidgets, QtGui
 import sys
 
+from openpyxl import Workbook, load_workbook
+
 from Daily import Daily
 from Memorize import Memorize
+from Total import Total
 
 main_ui = uic.loadUiType("MainWindow.ui")[0]
 test_ui = uic.loadUiType("TestWindow.ui")[0]
@@ -23,7 +26,7 @@ class MainWindow(QMainWindow, main_ui):
     def DailyBtn(self):
         cnt = 1
         while True:
-            self.dailyOption = DailyOption(cnt)
+            self.dailyOption = DailyOption(cnt, 0, None)
             self.dailyOption.exec_()
             if self.dailyOption.dailyWindow.end == 1:
                 break
@@ -32,17 +35,36 @@ class MainWindow(QMainWindow, main_ui):
             cnt += 1
         
     def TotalBtn(self):
-        pass
+        cnt = 1
+        self.totalOption = TotalOption(cnt)
+        self.totalOption.exec_()
+        mode = self.totalOption.mode
+        if self.totalOption.dailyOption.dailyWindow.end == 1:
+            return
+        self.memorizeWindow = MemorizeWindow(cnt)
+        self.memorizeWindow.exec_()
+        cnt += 1
+        while True:
+            self.dailyOption = DailyOption(cnt, mode, None)
+            self.dailyOption.exec_()
+            if self.dailyOption.dailyWindow.end == 1:
+                break
+            self.memorizeWindow = MemorizeWindow(cnt)
+            self.memorizeWindow.exec_()
+            cnt += 1
+        
 
 class DailyOption(QDialog, dailyop_ui):
-    def __init__(self, cnt):
+    def __init__(self, cnt, mode, scope):
         super().__init__()
         self.setupUi(self)
         self.cnt = cnt
+        self.mode = mode
+        self.scope = scope
         self.show()
         self.fbtn.hide()
         self.btn.clicked.connect(self.Btn)
-        if cnt == 1:
+        if cnt == 1 and mode == 0:
             self.fbtn.clicked.connect(self.Fopen)
             self.fbtn.show()
         else:
@@ -62,24 +84,31 @@ class DailyOption(QDialog, dailyop_ui):
         if self.chk5.isChecked():
             plist.append(3)
         self.close()
-        if self.cnt == 1:
-            path = self.fdir[0]
+        if self.cnt == 1 and self.mode == 0:
+            info = [self.fdir[0]]
+        elif self.cnt > 1:
+            info = [os.getcwd() + f'\\data\\review.xlsx']
+        elif self.mode == 1:
+            info = [os.getcwd() + f'\\data\\CumulativeWords.xlsx']
+            info.extend(self.scope)
         else:
-            path = os.getcwd() + f'\\data\\review.xlsx'
+            info = [os.getcwd() + f'\\data\\review.xlsx']
+            info.extend(self.scope)
         tlimit = [0, self.line1.value(), self.line2.value(), self.line3.value()]
         rnd = self.chk1.isChecked()
-        mode = 0
         same = self.chk4.isChecked()
-        self.dailyWindow = TestWindow(mode, rnd, plist, path, self.cnt, same, tlimit)
+        self.dailyWindow = TestWindow(self.mode, rnd, plist, info, self.cnt, same, tlimit)
         self.dailyWindow.exec_()
 
 class TestWindow(QDialog, test_ui):
-    def __init__(self, mode, rnd, plist, fdir, cnt, same, tlimit):
+    def __init__(self, mode, rnd, plist, info, cnt, same, tlimit):
         super().__init__()
         self.setupUi(self)
         self.cnt = cnt
-        if mode == 0:
-            self.agent = Daily(rnd, plist, fdir, self.cnt, same)
+        if mode == 0 or cnt > 1:
+            self.agent = Daily(rnd, plist, info, self.cnt, same, mode)
+        else:
+            self.agent = Total(rnd, plist, info, self.cnt, same, mode)
         self.total = len(self.agent.word)
         self.score = 0
         self.n = 0
@@ -279,6 +308,57 @@ class MemorizeWindow(QDialog, memo_ui):
     def btnclick(self):
         self.load()
     
+class TotalOption(QDialog, totalop_ui):
+    def __init__(self, cnt):
+        super().__init__()
+        self.setupUi(self)
+        self.cnt = cnt
+        self.show()
+        wb = load_workbook(os.getcwd() + '\\data\\CumulativeWords.xlsx')
+        self.csheetname = wb.sheetnames
+        wb.close()
+        wb = load_workbook(os.getcwd() + '\\data\\review.xlsx')
+        self.rsheetname = wb.sheetnames
+        wb.close()
+        self.dlist = []
+        for sname in self.rsheetname:
+            tmp = sname.split('_')[0]
+            if tmp not in self.dlist:
+                self.dlist.append(tmp)
+        self.btn.clicked.connect(self.Btn)
+        self.rb1.clicked.connect(self.SetRange1)
+        self.rb2.clicked.connect(self.SetRange1)
+        self.cb1.activated.connect(self.SetRange2)
+        self.SetRange1()
+            
+    def SetRange1(self):
+        self.cb1.clear()
+        self.cb2.clear()
+        if self.rb1.isChecked():
+            self.cb1.addItems(self.csheetname)
+        else:
+            self.cb1.addItems(self.dlist)
+        self.SetRange2()
+                   
+    def SetRange2(self):
+        self.cb2.clear()
+        if self.rb1.isChecked():
+            tmp = self.csheetname.index(self.cb1.currentText())
+            self.cb2.addItems(self.csheetname[tmp:])
+        else:
+            tmp = self.dlist.index(self.cb1.currentText())
+            self.cb2.addItems(self.dlist[tmp:])
+
+    def Btn(self):
+        if self.rb1.isChecked():
+            self.mode = 1
+        else:
+            self.mode = 2
+        scope = [self.cb1.currentText(), self.cb2.currentText(), self.spinBox.value()]
+        self.close()
+        self.dailyOption = DailyOption(self.cnt, self.mode, scope)
+        self.dailyOption.exec_()
+
 if __name__ == '__main__':
     path = os.getcwd() + '\\data'
     if not os.path.isdir(path):

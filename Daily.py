@@ -7,22 +7,29 @@ import sys
 from openpyxl import Workbook, load_workbook
 
 class Daily():
-    def __init__(self, rnd, plist, fdir, cnt, same):
+    def __init__(self, rnd, plist, info, cnt, same, mode):
         self.rnd = rnd
         self.plist = plist
-        self.fdir = fdir
+        self.fdir = info[0]
         self.cnt = cnt
         self.same = same
+        self.mode = mode
         if self.cnt == 1:
-            self.wb = load_workbook(fdir)
+            self.wb = load_workbook(self.fdir)
             self.ws = self.wb.active
         else:
-            self.wb = load_workbook(fdir)
+            self.wb = load_workbook(self.fdir)
             self.ws = self.wb[self.wb.sheetnames[-1]]
         self.setWord()
         self.warn = 0
         if 2 in plist or 3 in plist:
-            with open(os.getcwd() + f'\\data\\{str(datetime.date.today())}.pkl', 'rb') as f:
+            if self.mode > 0:
+                tmp = load_workbook(os.getcwd() + f'\\data\\CumulativeWords.xlsx')
+                pklday = tmp.sheetnames[-1]
+                tmp.close()
+            else:
+                pklday = str(datetime.date.today())
+            with open(os.getcwd() + f'\\data\\{pklday}.pkl', 'rb') as f:
                 self.mlist = pickle.load(f)
             if len(self.mlist) < 6:
                 self.word = []
@@ -40,7 +47,8 @@ class Daily():
             if chk == 0:
                 continue
             self.word.append((row[0].value, row[1].value, row[2].value))
-        self.accumulate(self.word)
+        if self.mode == 0:
+            self.accumulate(self.word)
         self.wb.close()
     
     def nextQ(self):
