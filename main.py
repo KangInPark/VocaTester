@@ -10,11 +10,11 @@ from Daily import Daily
 from Memorize import Memorize
 from Total import Total
 
-main_ui = uic.loadUiType("MainWindow.ui")[0]
-test_ui = uic.loadUiType("TestWindow.ui")[0]
-dailyop_ui = uic.loadUiType("DailyOption.ui")[0]
-totalop_ui = uic.loadUiType("TotalOption.ui")[0]
-memo_ui = uic.loadUiType("MemorizeWindow.ui")[0]
+main_ui = uic.loadUiType(f"{os.getcwd()}\\MainWindow.ui")[0]
+test_ui = uic.loadUiType(f"{os.getcwd()}\\TestWindow.ui")[0]
+dailyop_ui = uic.loadUiType(f"{os.getcwd()}\\DailyOption.ui")[0]
+totalop_ui = uic.loadUiType(f"{os.getcwd()}\\TotalOption.ui")[0]
+memo_ui = uic.loadUiType(f"{os.getcwd()}\\MemorizeWindow.ui")[0]
 
 class MainWindow(QMainWindow, main_ui):
     def __init__(self):
