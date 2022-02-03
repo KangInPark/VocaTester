@@ -28,29 +28,35 @@ class MainWindow(QMainWindow, main_ui):
         while True:
             self.dailyOption = DailyOption(cnt, 0, None)
             self.dailyOption.exec_()
-            if self.dailyOption.dailyWindow.end == 1:
-                break
+            if self.dailyOption.userquit == 1 or self.dailyOption.dailyWindow.end == 1:
+                return
             self.memorizeWindow = MemorizeWindow(cnt)
             self.memorizeWindow.exec_()
+            if self.memorizeWindow.userquit == 1:
+                return
             cnt += 1
         
     def TotalBtn(self):
         cnt = 1
         self.totalOption = TotalOption(cnt)
         self.totalOption.exec_()
-        mode = self.totalOption.mode
-        if self.totalOption.dailyOption.dailyWindow.end == 1:
+        if self.totalOption.userquit == 1 or self.totalOption.dailyOption.dailyWindow.end == 1:
             return
+        mode = self.totalOption.mode
         self.memorizeWindow = MemorizeWindow(cnt)
         self.memorizeWindow.exec_()
+        if self.memorizeWindow.userquit == 1:
+            return
         cnt += 1
         while True:
             self.dailyOption = DailyOption(cnt, mode, None)
             self.dailyOption.exec_()
-            if self.dailyOption.dailyWindow.end == 1:
-                break
+            if self.dailyOption.userquit == 1 or self.dailyOption.dailyWindow.end == 1:
+                return
             self.memorizeWindow = MemorizeWindow(cnt)
             self.memorizeWindow.exec_()
+            if self.memorizeWindow.userquit == 1:
+                return
             cnt += 1
         
 
@@ -61,6 +67,7 @@ class DailyOption(QDialog, dailyop_ui):
         self.cnt = cnt
         self.mode = mode
         self.scope = scope
+        self.userquit = 1
         self.show()
         self.fbtn.hide()
         self.btn.clicked.connect(self.Btn)
@@ -83,6 +90,7 @@ class DailyOption(QDialog, dailyop_ui):
             plist.append(2)
         if self.chk5.isChecked():
             plist.append(3)
+        self.userquit = 0
         self.close()
         if self.cnt == 1 and self.mode == 0:
             info = [self.fdir[0]]
@@ -99,12 +107,15 @@ class DailyOption(QDialog, dailyop_ui):
         same = self.chk4.isChecked()
         self.dailyWindow = TestWindow(self.mode, rnd, plist, info, self.cnt, same, tlimit)
         self.dailyWindow.exec_()
+        if self.dailyWindow.userquit == 1:
+            self.userquit = 1
 
 class TestWindow(QDialog, test_ui):
     def __init__(self, mode, rnd, plist, info, cnt, same, tlimit):
         super().__init__()
         self.setupUi(self)
         self.cnt = cnt
+        self.userquit = 1
         if mode == 0 or cnt > 1:
             self.agent = Daily(rnd, plist, info, self.cnt, same, mode)
         else:
@@ -183,11 +194,13 @@ class TestWindow(QDialog, test_ui):
                 self.end = 1
                 ment += '\n오답이 없으므로 학습을 종료합니다.'
             QtWidgets.QMessageBox.information(self, '문제풀이 종료', ment)
+            self.userquit = 0
             self.close()
             return
         elif self.n == -1:
             QtWidgets.QMessageBox.critical(self, "경고", "선택한 유형의 테스트를 진행하기에 저장된 단어 데이터의 수가 부족합니다.\n고르기 유형의 경우 최소 6개 이상의 단어 데이터가 필요합니다.\n테스트를 종료합니다.")
             self.end = 1
+            self.userquit = 0
             self.close()
             return
         self.curr += 1
@@ -287,6 +300,7 @@ class MemorizeWindow(QDialog, memo_ui):
         self.btn.clicked.connect(self.btnclick)
         self.total = len(self.agent.memolist)
         self.curr = 0
+        self.userquit = 1
         self.show()
         self.load()
         
@@ -294,6 +308,7 @@ class MemorizeWindow(QDialog, memo_ui):
         self.data = self.agent.nextMemo()
         if self.data == None:
             QtWidgets.QMessageBox.information(self,'오답 점검 완료', '모든 오답을 점검하였습니다. 오답 문제들로 테스트를 재진행합니다.')
+            self.userquit = 0
             self.close()
             return
         s = self.data[0] + '\n\n'
@@ -313,6 +328,7 @@ class TotalOption(QDialog, totalop_ui):
         super().__init__()
         self.setupUi(self)
         self.cnt = cnt
+        self.userquit = 1
         self.show()
         wb = load_workbook(os.getcwd() + '\\data\\CumulativeWords.xlsx')
         self.csheetname = wb.sheetnames
@@ -355,9 +371,12 @@ class TotalOption(QDialog, totalop_ui):
         else:
             self.mode = 2
         scope = [self.cb1.currentText(), self.cb2.currentText(), self.spinBox.value()]
+        self.userquit = 0
         self.close()
         self.dailyOption = DailyOption(self.cnt, self.mode, scope)
         self.dailyOption.exec_()
+        if self.dailyOption.userquit == 1:
+            self.userquit = 1
 
 if __name__ == '__main__':
     path = os.getcwd() + '\\data'
@@ -366,4 +385,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     mainWindow = MainWindow()
     mainWindow.show()
-    sys.exit(app.exec_())
+    app.exec_()
