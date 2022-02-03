@@ -1,11 +1,15 @@
 from collections import deque
 from pathlib import Path
+import sys
 from openpyxl import load_workbook
 
 
 class Memorize():
     def __init__(self, cnt):
-        self.p = Path(__file__).parent.resolve()/"data"
+        if getattr(sys, 'frozen', False):
+            self.p = Path(sys.executable).parent.resolve()/"data"
+        else:
+            self.p = Path(__file__).parent.resolve()/"data"
         self.cnt = cnt
         self.wb = load_workbook(self.p/'review.xlsx')
         self.ws = self.wb[self.wb.sheetnames[-1]]

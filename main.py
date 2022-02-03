@@ -393,6 +393,8 @@ class TotalOption(QDialog, totalop_ui):
             self.userquit = 1
 
 if __name__ == '__main__':
+    if getattr(sys, 'frozen', False):
+        p = Path(sys.executable).parent.resolve()
     q = p/"data"
     if not q.is_dir():
         q.mkdir()

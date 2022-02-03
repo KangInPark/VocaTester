@@ -2,12 +2,16 @@ from copy import deepcopy
 from pathlib import Path
 import pickle
 from random import sample
+import sys
 from openpyxl import load_workbook
 from Daily import Daily
 
 class Total(Daily):
     def __init__(self, rnd, plist, info, cnt, same, mode):
-        self.p = Path(__file__).parent.resolve()/"data"
+        if getattr(sys, 'frozen', False):
+            self.p = Path(sys.executable).parent.resolve()/"data"
+        else:
+            self.p = Path(__file__).parent.resolve()/"data"
         self.rnd = rnd
         self.plist = plist
         self.fdir = info[0]
