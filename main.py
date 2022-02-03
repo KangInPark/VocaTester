@@ -79,7 +79,10 @@ class DailyOption(QDialog, dailyop_ui):
             self.btn.setEnabled(True)
     
     def Fopen(self):
-        self.fdir = Path(QtWidgets.QFileDialog.getOpenFileName(self,'OpenFile')).resolve()
+        path = QtWidgets.QFileDialog.getOpenFileName(self,'OpenFile', filter="Excel files (*.xlsx)")[0]
+        if path == "":
+            return
+        self.fdir = Path(path).resolve()
         self.label.setText('파일 선택 완료')
         self.btn.setEnabled(True)
     
@@ -94,7 +97,7 @@ class DailyOption(QDialog, dailyop_ui):
         self.userquit = 0
         self.close()
         if self.cnt == 1 and self.mode == 0:
-            info = [self.fdir[0]]
+            info = [self.fdir]
         elif self.cnt > 1:
             info = [p/"data"/"review.xlsx"]
         elif self.mode == 1:
