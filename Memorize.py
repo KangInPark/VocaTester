@@ -1,12 +1,13 @@
 from collections import deque
-import os
+from pathlib import Path
 from openpyxl import load_workbook
 
 
 class Memorize():
     def __init__(self, cnt):
+        self.p = Path(__file__).parent.resolve()/"data"
         self.cnt = cnt
-        self.wb = load_workbook(os.getcwd() + f'\\data\\review.xlsx')
+        self.wb = load_workbook(self.p/'review.xlsx')
         self.ws = self.wb[self.wb.sheetnames[-1]]
         self.memolist = deque()
         self.setMemo()

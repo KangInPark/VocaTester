@@ -1,15 +1,13 @@
 from copy import deepcopy
-import datetime
-from json import load
-import os
+from pathlib import Path
 import pickle
-from random import choice, randint, sample
-import sys
-from openpyxl import Workbook, load_workbook
+from random import sample
+from openpyxl import load_workbook
 from Daily import Daily
 
 class Total(Daily):
     def __init__(self, rnd, plist, info, cnt, same, mode):
+        self.p = Path(__file__).parent.resolve()/"data"
         self.rnd = rnd
         self.plist = plist
         self.fdir = info[0]
@@ -19,14 +17,14 @@ class Total(Daily):
         self.cnt = cnt
         self.same = same
         self.mode = mode
-        tmp = load_workbook(os.getcwd() + f'\\data\\CumulativeWords.xlsx')
+        tmp = load_workbook(self.p/'CumulativeWords.xlsx')
         pklday = tmp.sheetnames[-1]
         tmp.close()
         self.wb = load_workbook(self.fdir)
         self.setWord()
         self.warn = 0
         if 2 in plist or 3 in plist:
-            with open(os.getcwd() + f'\\data\\{pklday}.pkl', 'rb') as f:
+            with (self.p/f'{pklday}.pkl').open('rb') as f:
                 self.mlist = pickle.load(f)
             if len(self.mlist) < 6:
                 self.word = []

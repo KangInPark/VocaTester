@@ -1,13 +1,13 @@
 from copy import deepcopy
+from pathlib import Path
 import datetime
-import os
 import pickle
 from random import choice, randint
-import sys
 from openpyxl import Workbook, load_workbook
 
 class Daily():
     def __init__(self, rnd, plist, info, cnt, same, mode):
+        self.p = Path(__file__).parent.resolve()/"data"
         self.rnd = rnd
         self.plist = plist
         self.fdir = info[0]
@@ -24,12 +24,12 @@ class Daily():
         self.warn = 0
         if 2 in plist or 3 in plist:
             if self.mode > 0:
-                tmp = load_workbook(os.getcwd() + f'\\data\\CumulativeWords.xlsx')
+                tmp = load_workbook(self.p/'CumulativeWords.xlsx')
                 pklday = tmp.sheetnames[-1]
                 tmp.close()
             else:
                 pklday = str(datetime.date.today())
-            with open(os.getcwd() + f'\\data\\{pklday}.pkl', 'rb') as f:
+            with (self.p/f'{pklday}.pkl').open('rb') as f:
                 self.mlist = pickle.load(f)
             if len(self.mlist) < 6:
                 self.word = []
@@ -96,8 +96,8 @@ class Daily():
         return n, ret
     
     def review(self, wans):
-        path = os.getcwd() + '\\data\\review.xlsx'
-        if not os.path.isfile(path):
+        path = self.p/'review.xlsx'
+        if not path.is_file():
             wb = Workbook()
             ws = wb['Sheet']
             ws.title = f'{str(datetime.date.today())}_1'
@@ -134,10 +134,10 @@ class Daily():
         
     def accumulate(self, words):
         word = deepcopy(words)
-        path = os.getcwd() + '\\data\\CumulativeWords.xlsx'
+        path = self.p/'CumulativeWords.xlsx'
         dup = {}
         today = str(datetime.date.today())
-        if not os.path.isfile(path):
+        if not path.is_file():
             wb = Workbook()
             ws = wb['Sheet']
             ws.title = today
@@ -164,9 +164,9 @@ class Daily():
         pick = []
         idx = wb.sheetnames.index(today) 
         if idx > 0:
-            with open(os.getcwd() + f'\\data\\{wb.sheetnames[idx-1]}.pkl', 'rb') as f:
+            with (self.p/f'{wb.sheetnames[idx-1]}.pkl').open('rb') as f:
                 pick = pickle.load(f)
         pick.extend(word)
-        with open(os.getcwd() + f'\\data\\{today}.pkl', 'wb') as f:
+        with (self.p/f'{today}.pkl').open('wb') as f:
             pickle.dump(pick, f)
         wb.close()

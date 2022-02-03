@@ -1,20 +1,21 @@
-import os
+from pathlib import Path
 from random import shuffle
 from PyQt5.QtWidgets import *
-from PyQt5 import uic, QtCore, QtWidgets, QtGui
+from PyQt5 import uic, QtCore, QtWidgets
 import sys
 
-from openpyxl import Workbook, load_workbook
+from openpyxl import load_workbook
 
 from Daily import Daily
 from Memorize import Memorize
 from Total import Total
 
-main_ui = uic.loadUiType(f"{os.getcwd()}\\MainWindow.ui")[0]
-test_ui = uic.loadUiType(f"{os.getcwd()}\\TestWindow.ui")[0]
-dailyop_ui = uic.loadUiType(f"{os.getcwd()}\\DailyOption.ui")[0]
-totalop_ui = uic.loadUiType(f"{os.getcwd()}\\TotalOption.ui")[0]
-memo_ui = uic.loadUiType(f"{os.getcwd()}\\MemorizeWindow.ui")[0]
+p = Path(__file__).parent.resolve()
+main_ui = uic.loadUiType(p/"MainWindow.ui")[0]
+test_ui = uic.loadUiType(p/"TestWindow.ui")[0]
+dailyop_ui = uic.loadUiType(p/"DailyOption.ui")[0]
+totalop_ui = uic.loadUiType(p/"TotalOption.ui")[0]
+memo_ui = uic.loadUiType(p/"MemorizeWindow.ui")[0]
 
 class MainWindow(QMainWindow, main_ui):
     def __init__(self):
@@ -78,7 +79,7 @@ class DailyOption(QDialog, dailyop_ui):
             self.btn.setEnabled(True)
     
     def Fopen(self):
-        self.fdir = QtWidgets.QFileDialog.getOpenFileName(self,'OpenFile')
+        self.fdir = Path(QtWidgets.QFileDialog.getOpenFileName(self,'OpenFile')).resolve()
         self.label.setText('파일 선택 완료')
         self.btn.setEnabled(True)
     
@@ -95,12 +96,12 @@ class DailyOption(QDialog, dailyop_ui):
         if self.cnt == 1 and self.mode == 0:
             info = [self.fdir[0]]
         elif self.cnt > 1:
-            info = [os.getcwd() + f'\\data\\review.xlsx']
+            info = [p/"data"/"review.xlsx"]
         elif self.mode == 1:
-            info = [os.getcwd() + f'\\data\\CumulativeWords.xlsx']
+            info = [p/"data"/"CumulativeWords.xlsx"]
             info.extend(self.scope)
         else:
-            info = [os.getcwd() + f'\\data\\review.xlsx']
+            info = [p/'data'/'review.xlsx']
             info.extend(self.scope)
         tlimit = [0, self.line1.value(), self.line2.value(), self.line3.value()]
         rnd = self.chk1.isChecked()
@@ -330,10 +331,10 @@ class TotalOption(QDialog, totalop_ui):
         self.cnt = cnt
         self.userquit = 1
         self.show()
-        wb = load_workbook(os.getcwd() + '\\data\\CumulativeWords.xlsx')
+        wb = load_workbook(p/'data'/'CumulativeWords.xlsx')
         self.csheetname = wb.sheetnames
         wb.close()
-        wb = load_workbook(os.getcwd() + '\\data\\review.xlsx')
+        wb = load_workbook(p/'data'/'review.xlsx')
         self.rsheetname = wb.sheetnames
         wb.close()
         self.dlist = []
@@ -379,9 +380,9 @@ class TotalOption(QDialog, totalop_ui):
             self.userquit = 1
 
 if __name__ == '__main__':
-    path = os.getcwd() + '\\data'
-    if not os.path.isdir(path):
-        os.mkdir(path)
+    q = p/"data"
+    if not q.is_dir():
+        q.mkdir()
     app = QApplication(sys.argv)
     mainWindow = MainWindow()
     mainWindow.show()
