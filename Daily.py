@@ -29,14 +29,9 @@ class Daily():
         self.setWord()
         self.warn = 0
         if 2 in plist or 3 in plist:
-            if self.mode > 0:
-                tmp = load_workbook(self.p/'CumulativeWords.xlsx')
-                pklday = tmp.sheetnames[-1]
-                tmp.close()
-            else:
-                pklday = str(datetime.date.today())
-            with (self.p/f'{pklday}.pkl').open('rb') as f:
-                self.mlist = pickle.load(f)
+            pkl = "Wdata.pkl"
+            with (self.p/pkl).open('rb') as f:
+                self.mlist = list(pickle.load(f))
             if len(self.mlist) < 6:
                 self.word = []
                 self.warn = 1
@@ -48,7 +43,7 @@ class Daily():
                         if tmp[w[1]] == 6:
                             self.cls.remove(w[1])
                             if not self.cls:
-                                break    
+                                break
                  
     def setWord(self):
         self.word = []
@@ -178,12 +173,11 @@ class Daily():
                 ws.cell(i,2).value = word[i-1][1]
             ws.cell(i,3).value = word[i-1][2]
         wb.save(path)
-        pick = []
-        idx = wb.sheetnames.index(today) 
-        if idx > 0:
-            with (self.p/f'{wb.sheetnames[idx-1]}.pkl').open('rb') as f:
+        pick = set()
+        if (self.p/'Wdata.pkl').is_file():
+            with (self.p/'Wdata.pkl').open('rb') as f:
                 pick = pickle.load(f)
-        pick.extend(word)
-        with (self.p/f'{today}.pkl').open('wb') as f:
+        pick.update(word)
+        with (self.p/'Wdata.pkl').open('wb') as f:
             pickle.dump(pick, f)
         wb.close()

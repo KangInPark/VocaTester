@@ -23,15 +23,13 @@ class Total(Daily):
         self.same = same
         self.mode = mode
         self.cls = []
-        tmp = load_workbook(self.p/'CumulativeWords.xlsx')
-        pklday = tmp.sheetnames[-1]
-        tmp.close()
+        pkl = "Wdata.pkl"
         self.wb = load_workbook(self.fdir)
         self.setWord()
         self.warn = 0
         if 2 in plist or 3 in plist:
-            with (self.p/f'{pklday}.pkl').open('rb') as f:
-                self.mlist = pickle.load(f)
+            with (self.p/pkl).open('rb') as f:
+                self.mlist = list(pickle.load(f))
             if len(self.mlist) < 6:
                 self.word = []
                 self.warn = 1
