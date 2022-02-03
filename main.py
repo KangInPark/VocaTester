@@ -96,6 +96,9 @@ class DailyOption(QDialog, dailyop_ui):
             plist.append(2)
         if self.chk5.isChecked():
             plist.append(3)
+        if not plist:
+            QtWidgets.QMessageBox.critical(self, "경고", "1가지 이상의 문제 유형을 선택하셔야 합니다.")
+            return
         self.userquit = 0
         self.close()
         if self.cnt == 1 and self.mode == 0:
