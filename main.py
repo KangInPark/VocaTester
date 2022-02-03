@@ -23,6 +23,8 @@ class MainWindow(QMainWindow, main_ui):
         self.setupUi(self)
         self.btn1.clicked.connect(self.DailyBtn)
         self.btn2.clicked.connect(self.TotalBtn)
+        if not (p/'data'/'CumulativeWords.xlsx').is_file() and not (p/'data'/'review.xlsx').is_file():
+            self.btn2.setEnabled(False)
     
     def DailyBtn(self):
         cnt = 1
@@ -334,17 +336,25 @@ class TotalOption(QDialog, totalop_ui):
         self.cnt = cnt
         self.userquit = 1
         self.show()
-        wb = load_workbook(p/'data'/'CumulativeWords.xlsx')
-        self.csheetname = wb.sheetnames
-        wb.close()
-        wb = load_workbook(p/'data'/'review.xlsx')
-        self.rsheetname = wb.sheetnames
-        wb.close()
-        self.dlist = []
-        for sname in self.rsheetname:
-            tmp = sname.split('_')[0]
-            if tmp not in self.dlist:
-                self.dlist.append(tmp)
+        if (p/'data'/'CumulativeWords.xlsx').is_file():
+            wb = load_workbook(p/'data'/'CumulativeWords.xlsx')
+            self.csheetname = wb.sheetnames
+            wb.close()
+        else:
+            self.rb1.setEnabled(False)
+            self.rb2.setChecked(True)
+        if (p/'data'/'review.xlsx').is_file():
+            wb = load_workbook(p/'data'/'review.xlsx')
+            self.rsheetname = wb.sheetnames
+            wb.close()
+            self.dlist = []
+            for sname in self.rsheetname:
+                tmp = sname.split('_')[0]
+                if tmp not in self.dlist:
+                    self.dlist.append(tmp)
+        else:
+            self.rb2.setEnabled(False)
+            self.rb1.setChecked(True)
         self.btn.clicked.connect(self.Btn)
         self.rb1.clicked.connect(self.SetRange1)
         self.rb2.clicked.connect(self.SetRange1)
