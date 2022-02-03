@@ -1,3 +1,4 @@
+from collections import defaultdict
 from copy import deepcopy
 from pathlib import Path
 import datetime
@@ -18,6 +19,7 @@ class Daily():
         self.cnt = cnt
         self.same = same
         self.mode = mode
+        self.cls = []
         if self.cnt == 1:
             self.wb = load_workbook(self.fdir)
             self.ws = self.wb.active
@@ -38,7 +40,16 @@ class Daily():
             if len(self.mlist) < 6:
                 self.word = []
                 self.warn = 1
-                
+            if self.same:
+                tmp = defaultdict(int)
+                for w in self.mlist:
+                    if w[1] in self.cls:
+                        tmp[w[1]] += 1
+                        if tmp[w[1]] == 6:
+                            self.cls.remove(w[1])
+                            if not self.cls:
+                                break    
+                 
     def setWord(self):
         self.word = []
         chk = 1
@@ -51,6 +62,8 @@ class Daily():
             if chk == 0:
                 continue
             self.word.append((row[0].value, row[1].value, row[2].value))
+            if(row[1].value != None and row[1].value not in self.cls):
+                self.cls.append(row[1].value)
         if self.mode == 0:
             self.accumulate(self.word)
         self.wb.close()
@@ -75,7 +88,7 @@ class Daily():
                 pick = choice(self.mlist)
                 sam = pick[2]
                 if sam != ret[0][2] and sam not in ret:
-                    if self.same:     
+                    if self.same and ret[0][1] not in self.cls:
                         if ret[0][1] == None:
                             ret.append(sam)
                         else:
@@ -89,7 +102,7 @@ class Daily():
                 pick = choice(self.mlist)
                 sam = pick[0]
                 if sam != ret[0][0] and sam not in ret:
-                    if self.same:
+                    if self.same and ret[0][1] not in self.cls:
                         if ret[0][1] == None:
                             ret.append(sam)
                         else:

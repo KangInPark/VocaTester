@@ -1,3 +1,4 @@
+from collections import defaultdict
 from copy import deepcopy
 from pathlib import Path
 import pickle
@@ -21,6 +22,7 @@ class Total(Daily):
         self.cnt = cnt
         self.same = same
         self.mode = mode
+        self.cls = []
         tmp = load_workbook(self.p/'CumulativeWords.xlsx')
         pklday = tmp.sheetnames[-1]
         tmp.close()
@@ -33,6 +35,15 @@ class Total(Daily):
             if len(self.mlist) < 6:
                 self.word = []
                 self.warn = 1
+            if self.same:
+                tmp = defaultdict(int)
+                for w in self.mlist:
+                    if w[1] in self.cls:
+                        tmp[w[1]] += 1
+                        if tmp[w[1]] == 6:
+                            self.cls.remove(w[1])
+                            if not self.cls:
+                                break    
     
     def setWord(self):
         self.wlist = []
@@ -57,4 +68,7 @@ class Total(Daily):
         while self.qnum > len(self.wlist):
             self.wlist.extend(tmp)
         self.word = sample(self.wlist, self.qnum)
+        for w in self.word:
+            if(w[1] != None and w[1] not in self.cls):
+                self.cls.append(w[1])
         self.wb.close()
