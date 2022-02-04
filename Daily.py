@@ -154,6 +154,8 @@ class Daily():
             ws = wb['Sheet']
             ws.title = today
         else:
+            if not (self.p/'Wdata.pkl').is_file():
+                self.makePkl()
             wb = load_workbook(path)
             if today in wb.sheetnames:
                 ws = wb[today]
