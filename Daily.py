@@ -181,3 +181,15 @@ class Daily():
         with (self.p/'Wdata.pkl').open('wb') as f:
             pickle.dump(pick, f)
         wb.close()
+        
+    def makePkl(self):
+        with (self.p/'Wdata.pkl').open('wb') as f:
+            wb = load_workbook(self.p/'CumulativeWords.xlsx')
+            tmp = wb.sheetnames
+            data = set()
+            for sname in tmp:
+                ws = wb[sname]
+                for row in ws.iter_rows():
+                    data.add((row[0].value, row[1].value, row[2].value))
+            pickle.dump(data, f)
+            wb.close()
