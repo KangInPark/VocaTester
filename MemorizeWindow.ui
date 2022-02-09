@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>오답 외우기</string>
+   <string>오답 점검</string>
   </property>
   <widget class="QLabel" name="label3">
    <property name="geometry">
